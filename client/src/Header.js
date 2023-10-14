@@ -1,38 +1,75 @@
 import {Link} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "./UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
+
   const {setUserInfo,userInfo} = useContext(UserContext);
-  // useEffect(() => {
-  //   fetch('http://localhost:4000/profile', {
-  //     credentials: 'include',
-  //   }).then(response => {
-  //     response.json().then(userInfo => {
-  //       setUserInfo(userInfo);
-  //     });
-  //   });
-  // }, []);
 
-  // function logout() {
-  //   fetch('http://localhost:4000/logout', {
-  //     credentials: 'include',
-  //     method: 'POST',
-  //   });
-  //   setUserInfo(null);
-  // }
+   const callPage = async () => {
+     try {
+       const res = await fetch("/create", {
+         method: "GET",
+         headers: {
+           Accept: "application/json",
+           "Content-Type": "application/json",
+         },
+         credentials: "include",
+       });
+       const data = await res.json();
+       console.log(data);
+       setUserInfo(data);
 
-  const username = userInfo?.username;
+       if (!res.status === 200) {
+         const error = new Error(res.error);
+         throw error;
+       }
+       if (res.status === 401) {
+         navigate("/login");
+       }
+     } catch (error) {
+       console.log(error);
+       navigate("/login");
+     }
+   };
+useEffect(() => {
+  callPage();
+},[]);
+   const logOut = async () => {
+     try {
+       const res = await fetch("/logout", {
+         method: "GET",
+         headers: {
+           Accept: "application/json",
+           "Content-Type": "application/json",
+         },
+         credentials: "include",
+       });
+      //  const data = await res.json();
+       if (!res.status === 200) {
+         const error = new Error(res.error);
+         throw error;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      navigate("/login");
+   };
+
+  const username = userInfo?.email;
 
   return (
     <header>
       <Link to="/" className="logo">MyBlog</Link>
+      <p>heellll</p>
       <nav>
         {username && (
           <>
             <Link to="/create">Create new post</Link>
             <a 
-            // onClick={logout}
+            onClick={logOut}
             >Logout 
             ({username})</a>
           </>

@@ -1,8 +1,35 @@
 import {useState} from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
-  // const [username, setUsername] = useState('');
-  // const [password, setPassword] = useState('');
+  const [email, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  async function signUp(e){
+    try {
+      e.preventDefault();
+      const res = await fetch("/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.status === 422 || !data) {
+        console.log("Invalid");
+      } else {
+        console.log("success");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   // async function register(ev) {
   //   ev.preventDefault();
   //   const response = await fetch('http://localhost:4000/register', {
@@ -17,21 +44,26 @@ export default function RegisterPage() {
   //   }
   // }
   return (
-    <form className="register" 
-    // onSubmit={register}
+    <form
+      className="register"
+      // onSubmit={register}
     >
       <h1>Register</h1>
-      <input type="text"
-             placeholder="username"
-            //  value={username}
-            //  onChange={ev => setUsername(ev.target.value)}
-             />
-      <input type="password"
-             placeholder="password"
-            //  value={password}
-            //  onChange={ev => setPassword(ev.target.value)}
-             />
-      <button>Register</button>
+      <input
+        type="text"
+        placeholder="username"
+        value={email}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={signUp}>Register</button>
+      <br />
+      <button onClick={() => navigate("/login")}>already have account</button>
     </form>
   );
 }
