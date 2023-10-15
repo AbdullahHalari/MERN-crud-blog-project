@@ -113,7 +113,7 @@ useEffect(() => {
     <div>
       <header>
         <Link to="/" className="logo">
-          MyBlog
+          MyBlog CRUD
         </Link>
         <p>Abdullah halari</p>
         <nav>
